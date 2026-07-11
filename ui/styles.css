@@ -1,0 +1,627 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700;900&display=swap');
+
+:host {
+  all: initial; /* Reset styling containment */
+}
+
+/* Common box sizing reset inside overlay */
+#lumina-overlay * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Overlay Background container */
+#lumina-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2147483647;
+  background: radial-gradient(circle at center, rgba(18, 18, 24, 0.9) 0%, rgba(10, 10, 12, 0.99) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  overflow: hidden;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s, background 0.4s ease, backdrop-filter 0.4s ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* When video background is active, overlay becomes transparent */
+#lumina-overlay.lumina-bg-active {
+  background: rgba(10, 10, 14, 0.35) !important;
+  backdrop-filter: blur(var(--lumina-bg-blur, 15px));
+  -webkit-backdrop-filter: blur(var(--lumina-bg-blur, 15px));
+}
+
+#lumina-overlay.lumina-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Video Background Canvas (fullscreen video behind overlay) */
+#lumina-video-bg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#lumina-video-bg-canvas.lumina-bg-active {
+  opacity: 1;
+}
+
+/* Full Screen Ambient Visualizer Canvas */
+#lumina-ambient-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Glassmorphism Central Card */
+#lumina-card {
+  position: relative;
+  width: 580px;
+  padding: 22px 30px;
+  background: rgba(18, 18, 26, 0.55);
+  border-radius: 20px;
+  border: 1.5px solid #00f0ff;
+  backdrop-filter: blur(var(--lumina-card-blur, 25px));
+  -webkit-backdrop-filter: blur(var(--lumina-card-blur, 25px));
+  animation: rgb-border 8s linear infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  text-align: center;
+  transition: backdrop-filter 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Playback Progress Seek Bar & Timer */
+#lumina-progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+
+#lumina-progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 6px;
+}
+
+#lumina-progress-slider {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#lumina-progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00f0ff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+#lumina-progress-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.35);
+  background: #ff0080;
+  box-shadow: 0 0 8px rgba(255, 0, 128, 0.8);
+}
+
+#lumina-timer {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.lumina-seek-btn {
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.lumina-seek-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.lumina-seek-btn:hover {
+  color: #00f0ff;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.lumina-seek-btn:active {
+  transform: scale(0.92);
+}
+
+/* Card Header */
+#lumina-brand {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+}
+
+#lumina-title {
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  line-height: 1.3;
+  background: linear-gradient(135deg, #ffffff 30%, rgba(255, 255, 255, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 
+    0 0 20px rgba(255, 0, 128, 0.25),
+    0 0 40px rgba(0, 240, 255, 0.15);
+  width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  padding: 0 10px;
+}
+
+#lumina-artist {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* Inner Visualizer Area */
+#lumina-visualizer-container {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 18px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#lumina-card-canvas {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+/* Playback Control Center */
+#lumina-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+/* Custom Control Button */
+.lumina-ctrl-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lumina-ctrl-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.lumina-ctrl-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.lumina-ctrl-btn:active svg {
+  transform: scale(0.92);
+}
+
+.lumina-ctrl-btn.active-neon-text {
+  color: #00f0ff !important;
+}
+
+.lumina-ctrl-btn.active-neon-text svg {
+  fill: #00f0ff !important;
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.8));
+}
+
+/* Main Circular Play Button */
+.lumina-btn-main {
+  width: 72px;
+  height: 72px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.15), 0 0 40px rgba(0, 240, 255, 0.1);
+  border-color: #ff0080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.lumina-btn-main svg {
+  width: 32px;
+  height: 32px;
+}
+
+.lumina-btn-main:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #00f0ff;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), 0 0 60px rgba(255, 0, 128, 0.15);
+  color: #ffffff;
+}
+
+/* Quick Action Footer Links */
+#lumina-footer {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 15px;
+}
+
+.lumina-foot-link {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  padding: 4px 0;
+}
+
+.lumina-foot-link:hover {
+  color: #ffffff;
+}
+
+.lumina-foot-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #ff0080, #00f0ff);
+  transition: width 0.25s ease, left 0.25s ease;
+}
+
+.lumina-foot-link:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+.lumina-foot-link.active-neon-text {
+  color: #00f0ff;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+/* Settings Sub-Panel */
+#lumina-settings-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(14, 14, 18, 0.78);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 28px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 50;
+  box-sizing: border-box;
+  text-align: left;
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Scrollable inner content — all rows scroll, button stays pinned */
+#lumina-settings-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-right: 6px;
+  margin-right: -6px;
+  padding-bottom: 16px;
+}
+
+/* Custom slim neon scrollbar */
+#lumina-settings-content::-webkit-scrollbar {
+  width: 4px;
+}
+#lumina-settings-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 2px;
+}
+#lumina-settings-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00f0ff, #ff0080);
+  border-radius: 2px;
+}
+#lumina-settings-content::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+}
+
+#lumina-settings-panel.lumina-hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#lumina-settings-panel h3 {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 12px;
+}
+
+.lumina-settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lumina-settings-row label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+/* Slider Controls */
+.lumina-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.lumina-slider-container input[type="range"] {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.lumina-slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00f0ff;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.lumina-slider-container input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+#lumina-blur-val {
+  font-size: 12px;
+  font-family: monospace;
+  color: #00f0ff;
+  width: 40px;
+  text-align: right;
+}
+
+/* Dropdown / Select Controls */
+.lumina-settings-row select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 10px;
+  padding: 12px 18px;
+  height: 48px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lumina-settings-row select:focus {
+  border-color: #ff0080;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.lumina-settings-row select option {
+  background: #121216;
+  color: #ffffff;
+}
+
+/* Settings Button — always pinned at bottom, never squeezed */
+.lumina-settings-btn {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 12px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.12) 0%, rgba(255, 0, 128, 0.12) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-radius: 10px;
+  padding: 12px 18px;
+  height: 48px;
+  color: #00f0ff;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1;
+  box-sizing: border-box;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lumina-settings-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.2) 0%, rgba(0, 240, 255, 0.1) 100%);
+  border-color: #ff0080;
+  color: #ffffff;
+  box-shadow: 
+    0 0 20px rgba(255, 0, 128, 0.45),
+    0 0 40px rgba(0, 240, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.lumina-settings-btn:active {
+  transform: scale(0.98);
+}
+
+/* Credits Branding Footer */
+#lumina-credits {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  margin-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+}
+
+.lumina-credit-link {
+  color: rgba(0, 240, 255, 0.65);
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.lumina-credit-link:hover {
+  color: #ff0080;
+  text-shadow: 0 0 5px rgba(255, 0, 128, 0.4);
+}
+
+/* Helper hidden class */
+.lumina-hidden {
+  display: none !important;
+}
+
+/* Keyframes animations */
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.2), 0 0 30px rgba(0, 240, 255, 0.1);
+    border-color: #ff0080;
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(255, 0, 128, 0.35), 0 0 50px rgba(0, 240, 255, 0.25);
+    border-color: #00f0ff;
+  }
+}
+
+@keyframes rgb-border {
+  0% {
+    border-color: #00f0ff;
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 15px rgba(0, 240, 255, 0.3);
+  }
+  33% {
+    border-color: #ff0080;
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 15px rgba(255, 0, 128, 0.3);
+  }
+  66% {
+    border-color: #b026ff;
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 15px rgba(176, 38, 255, 0.3);
+  }
+  100% {
+    border-color: #00f0ff;
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 15px rgba(0, 240, 255, 0.3);
+  }
+}
+

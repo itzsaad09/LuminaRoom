@@ -1,0 +1,151 @@
+<div id="lumina-overlay" class="lumina-hidden">
+  <!-- Video Background Canvas (renders actual YouTube video fullscreen) -->
+  <canvas id="lumina-video-bg-canvas"></canvas>
+
+  <!-- Full Screen Ambient Wave Visualizer Canvas -->
+  <canvas id="lumina-ambient-canvas"></canvas>
+
+  <!-- Central Glassmorphism Media Card -->
+  <div id="lumina-card">
+    <div id="lumina-card-header">
+      <div id="lumina-brand">LuminaRoom</div>
+      <div id="lumina-title">TRACK TITLE</div>
+      <div id="lumina-artist">YouTube Audio</div>
+    </div>
+
+    <!-- Inner Wave Visualizer Canvas -->
+    <div id="lumina-visualizer-container">
+      <canvas id="lumina-card-canvas"></canvas>
+    </div>
+
+    <!-- Playback Navigation Controls -->
+    <div id="lumina-controls">
+      <!-- Previous Button -->
+      <button id="lumina-btn-prev" class="lumina-ctrl-btn" title="Previous Video">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+        </svg>
+      </button>
+
+      <!-- Play / Pause Circle Button -->
+      <button id="lumina-btn-play" class="lumina-ctrl-btn lumina-btn-main" title="Play / Pause">
+        <svg id="lumina-svg-play" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <svg id="lumina-svg-pause" class="lumina-hidden" viewBox="0 0 24 24">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      </button>
+
+      <!-- Next Button -->
+      <button id="lumina-btn-next" class="lumina-ctrl-btn" title="Next Video">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+        </svg>
+      </button>
+
+      <!-- Volume / Mute Button -->
+      <button id="lumina-btn-mute" class="lumina-ctrl-btn" title="Mute / Unmute">
+        <svg id="lumina-svg-volume-on" viewBox="0 0 24 24">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+        <svg id="lumina-svg-volume-off" class="lumina-hidden" viewBox="0 0 24 24">
+          <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+        </svg>
+      </button>
+
+      <!-- Loop Button -->
+      <button id="lumina-btn-loop" class="lumina-ctrl-btn" title="Toggle Loop">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Playback Seek and Timer Bar -->
+    <div id="lumina-progress-container">
+      <button id="lumina-btn-back5" class="lumina-seek-btn" title="-5 Seconds">
+        <svg viewBox="0 0 24 24">
+          <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+        </svg>
+        <span>-5s</span>
+      </button>
+      
+      <div id="lumina-progress-wrapper">
+        <input type="range" id="lumina-progress-slider" min="0" max="100" value="0">
+        <div id="lumina-timer">0:00 / 0:00</div>
+      </div>
+
+      <button id="lumina-btn-fwd5" class="lumina-seek-btn" title="+5 Seconds">
+        <span>+5s</span>
+        <svg viewBox="0 0 24 24">
+          <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quick Action Links -->
+    <div id="lumina-footer">
+      <button id="lumina-link-settings" class="lumina-foot-link">SETTINGS</button>
+      <button id="lumina-link-exit" class="lumina-foot-link">EXIT</button>
+    </div>
+
+    <!-- Credits Section -->
+    <div id="lumina-credits">
+      <div>LuminaRoom &copy; 2026 &bull; Premium Ambient Visualizer</div>
+      <div>By Hafiz Muhammad Saad &bull; <a href="https://github.com/itzsaad09" target="_blank" class="lumina-credit-link">GitHub</a> &bull; <a href="https://www.linkedin.com/in/itzsaad09/" target="_blank" class="lumina-credit-link">LinkedIn</a></div>
+    </div>
+
+    <!-- Settings Panel (Collapsible/Hidden by default) -->
+    <div id="lumina-settings-panel" class="lumina-hidden">
+      <h3>LUMINA SETTINGS</h3>
+
+      <!-- Scrollable settings rows -->
+      <div id="lumina-settings-content">
+        <div class="lumina-settings-row">
+          <label for="lumina-settings-blur">Glass Blur Intensity</label>
+          <div class="lumina-slider-container">
+            <input type="range" id="lumina-settings-blur" min="5" max="50" value="25">
+            <span id="lumina-blur-val">25px</span>
+          </div>
+        </div>
+
+        <div class="lumina-settings-row">
+          <label for="lumina-settings-palette">Color Palette</label>
+          <select id="lumina-settings-palette">
+            <option value="neon-pink-cyan">Cyan &amp; Pink (Neon)</option>
+            <option value="sunset-glow">Gold &amp; Purple (Sunset)</option>
+            <option value="emerald-aurora">Emerald &amp; Blue (Aurora)</option>
+            <option value="rgb-cycle">RGB Cycle (Spectrum)</option>
+          </select>
+        </div>
+
+        <div class="lumina-settings-row">
+          <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <span>Show Video Background</span>
+            <input type="checkbox" id="lumina-settings-bg-on" style="width: 18px; height: 18px; cursor: pointer; accent-color: #00f0ff;">
+          </label>
+        </div>
+
+        <div class="lumina-settings-row" id="lumina-bg-opacity-row">
+          <label for="lumina-settings-bg-opacity">Video Opacity</label>
+          <div class="lumina-slider-container">
+            <input type="range" id="lumina-settings-bg-opacity" min="10" max="90" value="50">
+            <span id="lumina-bg-opacity-val">50%</span>
+          </div>
+        </div>
+
+        <div class="lumina-settings-row" id="lumina-bg-blur-row">
+          <label for="lumina-settings-bg-blur">Video Blur</label>
+          <div class="lumina-slider-container">
+            <input type="range" id="lumina-settings-bg-blur" min="0" max="40" value="15">
+            <span id="lumina-bg-blur-val">15px</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinned Save button — always full height, never squeezed -->
+      <button id="lumina-settings-close" class="lumina-settings-btn">SAVE &amp; CLOSE</button>
+    </div>
+  </div>
+</div>

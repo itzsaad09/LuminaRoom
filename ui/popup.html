@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LuminaRoom Panel</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700;900&display=swap');
+
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 24px;
+      background: radial-gradient(circle at center, #1a1a24 0%, #0d0d11 100%);
+      color: #ffffff;
+      font-family: 'Outfit', 'Inter', sans-serif;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* Header Brand */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .brand-name {
+      font-size: 20px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #00f0ff 0%, #ff0080 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+    }
+
+    .status-badge {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ff3b30;
+      box-shadow: 0 0 8px #ff3b30;
+      margin-left: auto;
+      transition: all 0.3s ease;
+    }
+
+    .status-badge.active {
+      background-color: #00ff88;
+      box-shadow: 0 0 8px #00ff88;
+    }
+
+    /* Content Area */
+    .content-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+      min-height: 120px;
+    }
+
+    .box-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* Cosmic Toggle Styles */
+    .cosmic-toggle {
+      position: relative;
+      width: 90px;
+      height: 45px;
+      transform-style: preserve-3d;
+      perspective: 500px;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .cosmic-toggle .toggle {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .cosmic-toggle .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, #101014, #1a1a24);
+      border: 1.5px solid rgba(0, 240, 255, 0.25);
+      border-radius: 22.5px;
+      transition: 0.5s;
+      transform-style: preserve-3d;
+      box-shadow:
+        0 0 10px rgba(0, 0, 0, 0.5),
+        inset 0 0 8px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    .cosmic-toggle .cosmos {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(1px 1px at 10% 10%, #fff 100%, transparent),
+        radial-gradient(1px 1px at 30% 30%, #fff 100%, transparent),
+        radial-gradient(1.5px 1.5px at 50% 50%, #fff 100%, transparent),
+        radial-gradient(1px 1px at 70% 70%, #fff 100%, transparent),
+        radial-gradient(1.5px 1.5px at 90% 90%, #fff 100%, transparent);
+      background-size: 200% 200%;
+      opacity: 0.2;
+      transition: 0.5s;
+    }
+
+    .cosmic-toggle .toggle-orb {
+      position: absolute;
+      height: 35px;
+      width: 35px;
+      left: 3.5px;
+      bottom: 3.5px;
+      background: linear-gradient(145deg, #ff0080, #00f0ff);
+      border-radius: 50%;
+      transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transform-style: preserve-3d;
+      z-index: 2;
+    }
+
+    .cosmic-toggle .inner-orb {
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffffff, #dcdcdc);
+      transition: 0.5s;
+      overflow: hidden;
+    }
+
+    .cosmic-toggle .inner-orb::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-conic-gradient(from 0deg,
+          transparent 0deg,
+          rgba(0, 0, 0, 0.1) 15deg,
+          transparent 30deg);
+      animation: patternRotate 12s linear infinite;
+    }
+
+    .cosmic-toggle .ring {
+      position: absolute;
+      inset: -2.5px;
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      transition: 0.5s;
+    }
+
+    .cosmic-toggle .toggle:checked+.slider {
+      background: linear-gradient(45deg, #181822, #101014);
+      border-color: rgba(255, 0, 128, 0.35);
+    }
+
+    .cosmic-toggle .toggle:checked+.slider .toggle-orb {
+      transform: translateX(44px) rotate(360deg);
+      background: linear-gradient(145deg, #00f0ff, #ff0080);
+    }
+
+    .cosmic-toggle .toggle:checked+.slider .inner-orb {
+      background: linear-gradient(145deg, #00f0ff, #ff0080);
+      transform: scale(0.9);
+    }
+
+    .cosmic-toggle .toggle:checked+.slider .ring {
+      border-color: rgba(0, 240, 255, 0.4);
+      animation: ringPulse 2s infinite;
+    }
+
+    .cosmic-toggle .energy-line {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(0, 240, 255, 0.4),
+          transparent);
+      transform-origin: left;
+      opacity: 0;
+      transition: 0.5s;
+    }
+
+    .cosmic-toggle .energy-line:nth-child(1) {
+      top: 20%;
+      transform: rotate(15deg);
+    }
+
+    .cosmic-toggle .energy-line:nth-child(2) {
+      top: 50%;
+      transform: rotate(0deg);
+    }
+
+    .cosmic-toggle .energy-line:nth-child(3) {
+      top: 80%;
+      transform: rotate(-15deg);
+    }
+
+    .cosmic-toggle .toggle:checked+.slider .energy-line {
+      opacity: 1;
+      animation: energyFlow 2s linear infinite;
+    }
+
+    .cosmic-toggle .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cosmic-toggle .particle {
+      position: absolute;
+      width: 2.5px;
+      height: 2.5px;
+      background: #00f0ff;
+      border-radius: 50%;
+      opacity: 0;
+    }
+
+    .cosmic-toggle .toggle:checked+.slider .particle {
+      animation: particleBurst 1s ease-out infinite;
+    }
+
+    .cosmic-toggle .particle:nth-child(1) {
+      left: 20%;
+      animation-delay: 0s;
+    }
+
+    .cosmic-toggle .particle:nth-child(2) {
+      left: 40%;
+      animation-delay: 0.2s;
+    }
+
+    .cosmic-toggle .particle:nth-child(3) {
+      left: 60%;
+      animation-delay: 0.4s;
+    }
+
+    .cosmic-toggle .particle:nth-child(4) {
+      left: 80%;
+      animation-delay: 0.6s;
+    }
+
+    .cosmic-toggle .particle:nth-child(5) {
+      left: 30%;
+      animation-delay: 0.8s;
+    }
+
+    .cosmic-toggle .particle:nth-child(6) {
+      left: 70%;
+      animation-delay: 1s;
+    }
+
+    @keyframes ringPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 0.6;
+      }
+    }
+
+    @keyframes patternRotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes energyFlow {
+      0% {
+        transform: scaleX(0) translateX(0);
+        opacity: 0;
+      }
+
+      50% {
+        transform: scaleX(1) translateX(25%);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scaleX(0) translateX(50%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes particleBurst {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(calc(cos(var(--angle)) * 30px),
+            calc(sin(var(--angle)) * 30px)) scale(0);
+        opacity: 0;
+      }
+    }
+
+    .cosmic-toggle .slider:hover .toggle-orb {
+      filter: brightness(1.2);
+      box-shadow:
+        0 0 10px rgba(0, 240, 255, 0.4),
+        0 0 20px rgba(255, 0, 128, 0.25);
+    }
+
+    .cosmic-toggle .slider:hover {
+      border-color: rgba(0, 240, 255, 0.5);
+    }
+
+    .cosmic-toggle .slider:hover .cosmos {
+      opacity: 0.3;
+      animation: cosmosPan 20s linear infinite;
+    }
+
+    @keyframes cosmosPan {
+      0% {
+        background-position: 0% 0%;
+      }
+
+      100% {
+        background-position: 200% 200%;
+      }
+    }
+
+    .cosmic-toggle .toggle:active+.slider .toggle-orb {
+      transform: scale(0.95);
+    }
+
+    .cosmic-toggle:hover .slider {
+      transform: rotateX(10deg) rotateY(10deg);
+    }
+
+    .cosmic-toggle:hover .toggle-orb {
+      transform: translateZ(5px);
+    }
+
+    /* Footer Copyright Section */
+    .footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 18px;
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.6;
+    }
+
+    .author-line {
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 4px;
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .links a {
+      color: #00f0ff;
+      text-decoration: none;
+      transition: color 0.2s ease;
+      font-weight: 600;
+    }
+
+    .links a:hover {
+      color: #ff0080;
+      text-shadow: 0 0 8px rgba(255, 0, 128, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <img src="../icons/icon48.png" class="logo-img" alt="LuminaRoom Logo">
+    <span class="brand-name">LuminaRoom</span>
+    <span id="header-status-badge" class="status-badge"></span>
+  </div>
+
+  <div class="content-box">
+    <div id="status-title" class="box-title">Loading Status...</div>
+
+    <label class="cosmic-toggle">
+      <input class="toggle" type="checkbox" id="popup-toggle-checkbox" disabled />
+      <div class="slider">
+        <div class="cosmos"></div>
+        <div class="energy-line"></div>
+        <div class="energy-line"></div>
+        <div class="energy-line"></div>
+        <div class="toggle-orb">
+          <div class="inner-orb"></div>
+          <div class="ring"></div>
+        </div>
+        <div class="particles">
+          <div style="--angle: 30deg" class="particle"></div>
+          <div style="--angle: 60deg" class="particle"></div>
+          <div style="--angle: 90deg" class="particle"></div>
+          <div style="--angle: 120deg" class="particle"></div>
+          <div style="--angle: 150deg" class="particle"></div>
+          <div style="--angle: 180deg" class="particle"></div>
+        </div>
+      </div>
+    </label>
+  </div>
+
+  <div class="footer">
+    <div>LuminaRoom &copy; 2026 &bull; Premium Ambient visualizer</div>
+    <div class="author-line">By Hafiz Muhammad Saad</div>
+    <div class="links">
+      <a href="https://github.com/itzsaad09" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/itzsaad09/" target="_blank">LinkedIn</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
